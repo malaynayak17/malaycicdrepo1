@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies
+      - pip install -r requirements.txt
+
+  pre_build:
+    commands:
+      - echo Logging in to ECR
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 212168633295.dkr.ecr.ap-south-1.amazonaws.com
+
+  build:
+    commands:
+      - echo Build started
+      - docker build -t dockermalay-app .
+      - docker tag dockermalay-app:latest 212168633295.dkr.ecr.ap-south-1.amazonaws.com/dockermalay-app:latest
+
+  post_build:
+    commands:
+      - echo Pushing Docker image
+      - docker push 212168633295.dkr.ecr.ap-south-1.amazonaws.com/dockermalay-app:latest
+
+artifacts:
+  files:
+    - '**/*'
